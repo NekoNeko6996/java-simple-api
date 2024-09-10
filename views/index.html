@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h3 id="data"></h3>
+
+    <script>
+      fetch("http://localhost:8000/api")
+        .then((res) => res.json())
+        .then((data) => (document.getElementById("data").innerHTML = data));
+    </script>
+  </body>
+</html>
