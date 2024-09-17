@@ -1,19 +1,14 @@
 package src.handlers;
 
 import com.sun.net.httpserver.HttpHandler;
-
 import java.io.IOException;
-
 import com.sun.net.httpserver.HttpExchange;
 import src.cors.Cors;
 
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import src.libraries.JWT;
-import src.libraries.JsonParser;
 
 public class CheckTokenHandler implements HttpHandler {
 
