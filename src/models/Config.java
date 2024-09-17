@@ -10,12 +10,13 @@ public class Config {
   private String sql_password;
   private String sql_database;
   private String sql_driverClass;
+  private String auth_secret_key;
 
   public Config() {
   }
 
   public Config(String server_host, int server_port, int server_max_threads, String sql_host, int sql_port,
-      String sql_user, String sql_password, String sql_database, String sql_driverClass) {
+      String sql_user, String sql_password, String sql_database, String sql_driverClass, String auth_secret_key) {
     this.server_host = server_host;
     this.server_port = server_port;
     this.server_max_threads = server_max_threads;
@@ -25,9 +26,13 @@ public class Config {
     this.sql_password = sql_password;
     this.sql_database = sql_database;
     this.sql_driverClass = sql_driverClass;
+    this.auth_secret_key = auth_secret_key;
   }
 
   // getters
+  public String getAuth_secret_key() {
+    return auth_secret_key;
+  }
   public String getServer_host() {
     return server_host;
   }
@@ -65,6 +70,10 @@ public class Config {
   }
 
   // setters
+  public void setAuth_secret_key(String auth_secret_key) {
+    this.auth_secret_key = auth_secret_key;
+  }
+
   public void setServer_host(String server_host) {
     this.server_host = server_host;
   }

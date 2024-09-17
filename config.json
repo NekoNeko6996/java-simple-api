@@ -7,5 +7,6 @@
   "sql_user": "root",
   "sql_password": "",
   "sql_database": "java_api_database",
-  "sql_driverClass": "com.mysql.cj.jdbc.Driver"
+  "sql_driverClass": "com.mysql.cj.jdbc.Driver",
+  "auth_secret_key": "test_key"
 }

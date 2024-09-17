@@ -37,6 +37,8 @@ public class Server {
         // handle requests
         server.createContext("/adduser", new AddUserHandler());
         server.createContext("/view", new WebViewHandler());
+        server.createContext("/createjwt", new CreateJwtHandler());
+        server.createContext("/checktoken", new CheckTokenHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());

@@ -51,7 +51,7 @@ public class JsonParser {
   }
 
   // convert json string to map key and value
-  private static Map<String, String> parseJsonToMap(String json) {
+  public static Map<String, String> parseJsonToMap(String json) {
     Map<String, String> map = new HashMap<>();
     // delete curly braces
     json = json.trim().replaceAll("\\{", "").replaceAll("\\}", "");
