@@ -19,6 +19,11 @@
 # Run Project
 
 > - Open terminal in project folder and run bash:
->   <code>java -cp "drivers/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar" src/Server.java</code>
->   OR
-> - Ctrl + F5 `In VSCode` to run project (Require extension: `Extension pack for java`, )
+```console
+java -cp "drivers/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar" src/Server.java
+```
+> OR
+>- Ctrl + F5 `In VSCode` to run project (Require extension: `Extension pack for java`)
+
+> [!note]
+> - Replace `drivers/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar` path with path to your JDBC Driver.
