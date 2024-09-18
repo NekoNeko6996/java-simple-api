@@ -1,12 +1,12 @@
 {
-  "server_host": "localhost",
+  "server_host": "192.168.1.207",
   "server_port": 8080,
   "server_max_threads": 10,
   "sql_host": "localhost",
   "sql_port": 3306,
   "sql_user": "root",
   "sql_password": "",
-  "sql_database": "java_api_database",
+  "sql_database": "hex_travel_database",
   "sql_driverClass": "com.mysql.cj.jdbc.Driver",
   "auth_secret_key": "test_key"
 }

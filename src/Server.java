@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import src.config.ConfigLoader;
+import src.config.ConfigLoader;  
 import src.models.Config;
 import src.handlers.*;
 
@@ -39,6 +39,7 @@ public class Server {
         server.createContext("/view", new WebViewHandler());
         server.createContext("/createjwt", new CreateJwtHandler());
         server.createContext("/checktoken", new CheckTokenHandler());
+        server.createContext("/signup", new SignUpHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());
@@ -47,6 +48,6 @@ public class Server {
         // run server
         server.start();
 
-        System.out.println("Server is listening on port " + server.getAddress().getPort());
+        System.out.println("Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
     }
 }

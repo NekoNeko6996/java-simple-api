@@ -27,7 +27,7 @@ public class LoginHandler implements HttpHandler {
       InputStream inputStream = exchange.getRequestBody();
       String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-      loginForm loginData = JsonParser.fromJson(requestBody, loginForm.class);
+      // loginForm loginData = JsonParser.get;
 
       String query = "SELECT * FROM users WHERE email = ? AND password = ?";
       try (PreparedStatement statement = DataBase.getConnect().prepareStatement(query)) {

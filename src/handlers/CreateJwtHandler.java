@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import src.libraries.JWT;
+import src.models.LoginResponseJson;
 
 public class CreateJwtHandler implements HttpHandler {
 
@@ -34,9 +35,10 @@ public class CreateJwtHandler implements HttpHandler {
       OutputStream os = exchange.getResponseBody();
       try {
         String jwt = JWT.createToken(loginData, 3600);
+        String objectResponse = JsonParser.convertToJsonString(new LoginResponseJson(jwt));
 
-        exchange.sendResponseHeaders(200, jwt.length());
-        os.write(jwt.getBytes());
+        exchange.sendResponseHeaders(200, objectResponse.length());
+        os.write(objectResponse.getBytes());
       } catch (Exception e) {
         exchange.sendResponseHeaders(200, ("Error: " + e.getMessage().getBytes()).length());
         os.write(("Error: " + e.getMessage()).getBytes());
