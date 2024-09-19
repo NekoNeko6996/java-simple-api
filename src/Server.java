@@ -3,26 +3,22 @@ package src;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import src.config.ConfigLoader;  
+import src.config.ConfigLoader;
 import src.models.Config;
 import src.handlers.*;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+
 public class Server {
-    static Connection connect(String dbUrl, String username, String password) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = java.sql.DriverManager.getConnection(dbUrl, username, password);
-            System.out.println("Connection established");
-            return conn;
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Connection failed: " + e.getMessage());
-            return null;
-        }
+    public static String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
     }
 
     public static void main(String[] args) throws IOException {
@@ -35,11 +31,16 @@ public class Server {
                 0);
 
         // handle requests
-        server.createContext("/adduser", new AddUserHandler());
         server.createContext("/view", new WebViewHandler());
-        server.createContext("/createjwt", new CreateJwtHandler());
         server.createContext("/checktoken", new CheckTokenHandler());
         server.createContext("/signup", new SignUpHandler());
+        server.createContext("/login", new LoginHandler());
+        server.createContext("/gethash", new GenerateHashStringHandler());
+        server.createContext("/createtrip", new CreateATripHandler());
+        server.createContext("/addtrip", new AddTripHandler());
+        server.createContext("/get", new getHandler());
+        server.createContext("/addcategory", new AddCategoryHandler());
+        server.createContext("/addexpense", new AddExpenseHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());
@@ -48,6 +49,7 @@ public class Server {
         // run server
         server.start();
 
-        System.out.println("Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
+        System.out.println(
+                "Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
     }
 }

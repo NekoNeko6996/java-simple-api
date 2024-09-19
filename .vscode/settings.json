@@ -1,5 +1,17 @@
 {
-  "cSpell.words": ["adduser", "checktoken", "createjwt", "hmac", "jdbc", "JWT"],
+  "cSpell.words": [
+    "addcategory",
+    "addexpense",
+    "addtrip",
+    "adduser",
+    "checktoken",
+    "createjwt",
+    "createtrip",
+    "gethash",
+    "hmac",
+    "jdbc",
+    "JWT"
+  ],
   "java.project.referencedLibraries": [
     "lib/**/*.jar",
     "drivers/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar"

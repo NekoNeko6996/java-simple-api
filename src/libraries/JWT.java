@@ -80,4 +80,45 @@ public class JWT {
         }
         return payload;
     }
+
+    private static String decodeBase64Url(String input) {
+        input = input.replace("-", "+").replace("_", "/");
+        switch (input.length() % 4) {
+            case 2:
+                input += "==";
+                break;
+            case 3:
+                input += "=";
+                break;
+            default:
+                break;
+        }
+        return new String(Base64.getDecoder().decode(input));
+    }
+
+    public static Map<String, String> decodePayload(String jwt) {
+        String[] parts = jwt.split("\\.");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid JWT format");
+        }
+
+        String payloadJson = decodeBase64Url(parts[1]);
+
+        return parsePayload(payloadJson);
+    }
+
+    public static Map<String, String> getPayload(String json) {
+        Map<String, String> payload = new HashMap<>();
+        json = json.trim().replace("{", "").replace("}", "");
+        String[] pairs = json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split(":", 2);
+            if (keyValue.length == 2) {
+                String key = keyValue[0].trim().replace("\"", "");
+                String value = keyValue[1].trim().replace("\"", "");
+                payload.put(key, value);
+            }
+        }
+        return payload;
+    }
 }
