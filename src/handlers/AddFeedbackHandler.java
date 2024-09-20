@@ -40,34 +40,39 @@ public class AddFeedbackHandler implements HttpHandler {
       InputStream inputStream = exchange.getRequestBody();
       String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-      // convert body to map
-      Map<String, String> data = JsonParser.parseJsonToMap(requestBody);
+      try {
+        // convert body to map
+        Map<String, String> data = JsonParser.parseJsonToMap(requestBody);
 
-      // check if all fields are filled
-      if (data.get("message") == null) {
-        sendResponse(exchange, 400, Map.of("status", "error", "message", "All fields are required"));
-        return;
-      }
+        // check if all fields are filled
+        if (data.get("message") == null) {
+          sendResponse(exchange, 400, Map.of("status", "error", "message", "All fields are required"));
+          return;
+        }
 
-      // check if the token is present
-      if (data.get("token") == null || data.get("token").isEmpty()) {
-        sendResponse(exchange, 400, Map.of("status", "error", "message", "Token is required"));
-        return;
-      }
+        // check if the token is present
+        if (data.get("token") == null || data.get("token").isEmpty()) {
+          sendResponse(exchange, 400, Map.of("status", "error", "message", "Token is required"));
+          return;
+        }
 
-      // auth
-      AuthResult result = Auth.check(data.get("token"));
-      if (result.isSuccess() == false) {
-        sendResponse(exchange, 403, Map.of("status", "error", "message", result.getMessage()));
-        return;
-      }
+        // auth
+        AuthResult result = Auth.check(data.get("token"));
+        if (result.isSuccess() == false) {
+          sendResponse(exchange, 403, Map.of("status", "error", "message", result.getMessage()));
+          return;
+        }
 
-      // decode payload from token
-      Map<String, String> payload = result.getPayload();
-
-      if (!saveFeedback(Integer.parseInt(payload.get("user_id")), data.get("message"))) {
+        // decode payload from token
+        Map<String, String> payload = result.getPayload();
+        if (!saveFeedback(Integer.parseInt(payload.get("user_id")), data.get("message"))) {
+          sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save feedback"));
+          return;
+        }
+        sendResponse(exchange, 200, Map.of("status", "success", "message", "Feedback saved successfully"));
+      } catch (Exception e) {
+        e.printStackTrace();
         sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save feedback"));
-        return;
       }
     } else {
       sendResponse(exchange, 405, Map.of("status", "error", "message", "Method not allowed"));

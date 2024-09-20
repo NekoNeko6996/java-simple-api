@@ -2,6 +2,7 @@ package src.libraries;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JsonParser {
@@ -81,27 +82,27 @@ public class JsonParser {
     for (Field field : fields) {
       field.setAccessible(true);
       try {
-          if (!firstField) {
-              json.append(",");
-          }
-          firstField = false;
+        if (!firstField) {
+          json.append(",");
+        }
+        firstField = false;
 
-          String name = field.getName();
-          Object value = field.get(object);
+        String name = field.getName();
+        Object value = field.get(object);
 
-          json.append("\"").append(name).append("\":");
+        json.append("\"").append(name).append("\":");
 
-          if (value == null) {
-              json.append("null");
-          } else if (value instanceof String) {
-              json.append("\"").append(value).append("\"");
-          } else if (value instanceof Number || value instanceof Boolean) {
-              json.append(value);
-          } else {
-              json.append("\"").append(value.toString()).append("\"");
-          }
+        if (value == null) {
+          json.append("null");
+        } else if (value instanceof String) {
+          json.append("\"").append(value).append("\"");
+        } else if (value instanceof Number || value instanceof Boolean) {
+          json.append(value);
+        } else {
+          json.append("\"").append(value.toString()).append("\"");
+        }
       } catch (IllegalAccessException e) {
-          e.printStackTrace();
+        e.printStackTrace();
       }
     }
 
@@ -115,18 +116,20 @@ public class JsonParser {
 
     int size = map.size();
     int count = 0;
-    
-    for (Map.Entry<String, String> entry : map.entrySet()) {
-        jsonBuilder.append("\"").append(entry.getKey()).append("\":")
-                   .append("\"").append(entry.getValue()).append("\"");
 
-        count++;
-        if (count < size) {
-            jsonBuilder.append(",");
-        }
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      jsonBuilder.append("\"").append(entry.getKey()).append("\":")
+          .append("\"").append(entry.getValue()).append("\"");
+
+      count++;
+      if (count < size) {
+        jsonBuilder.append(",");
+      }
     }
 
     jsonBuilder.append("}");
     return jsonBuilder.toString();
   }
+
+  
 }

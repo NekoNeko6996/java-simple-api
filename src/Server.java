@@ -29,6 +29,15 @@ public class Server {
         server.createContext("/addcategory", new AddCategoryHandler());
         server.createContext("/addexpense", new AddExpenseHandler());
         server.createContext("/addfeedback", new AddFeedbackHandler());
+        server.createContext("/addtimeline", new AddTimelineHandler());
+        
+        // get route
+        server.createContext("/getfeedback", new GetFeedbackHandler());
+        server.createContext("/getsuggestedlocation", new GetSuggestedLocationHandler());
+        server.createContext("/gettrip", new GetTripHandler());
+        server.createContext("/getontrip", new GetOnTripHandler());
+        server.createContext("/getexpense", new GetExpenseHandler());
+        server.createContext("/gettimeline", new GetTimelineHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());
@@ -37,6 +46,7 @@ public class Server {
         // run server
         server.start();
 
-        System.out.println("Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
+        System.out.println(
+                "Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
     }
 }
