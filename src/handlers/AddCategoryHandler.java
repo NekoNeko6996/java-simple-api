@@ -10,7 +10,8 @@ import java.util.Map;
 import src.cors.Cors;
 import src.database.DataBase;
 import src.libraries.JsonParser;
-import src.libraries.JWT;
+import src.models.AuthResult;
+import src.auth.Auth;
 
 public class AddCategoryHandler implements HttpHandler {
   private static boolean saveCategory(int user_id, String category_name) {
@@ -37,20 +38,21 @@ public class AddCategoryHandler implements HttpHandler {
         Map<String, String> data = JsonParser
             .parseJsonToMap(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
 
-        // Check if the token is present
-        if (data.get("token") == null || data.get("token").isEmpty()) {
-          sendResponse(exchange, 400, Map.of("status", "error", "message", "Token is required"));
+        // Validate input data
+        if (data.get("category_name") == null || data.get("category_name").isEmpty() || data.get("token") == null) {
+          sendResponse(exchange, 400, Map.of("status", "error", "message", "Missing required fields"));
           return;
         }
 
-        // Verify JWT token
-        if (!JWT.verifyToken(data.get("token"))) {
-          sendResponse(exchange, 403, Map.of("status", "error", "message", "Invalid token"));
+        // auth
+        AuthResult result = Auth.check(data.get("token"));
+        if (result.isSuccess() == false) {
+          sendResponse(exchange, 403, Map.of("status", "error", "message", result.getMessage()));
           return;
         }
 
-        // Decode payload from token
-        Map<String, String> payload = JWT.decodePayload(data.get("token"));
+        Map<String, String> payload = result.getPayload();
+
         if (!saveCategory(Integer.parseInt(payload.get("user_id")), data.get("category_name"))) {
           sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save category"));
           return;
@@ -61,6 +63,8 @@ public class AddCategoryHandler implements HttpHandler {
         sendResponse(exchange, 400, Map.of("status", "error", "message", "Invalid request body"));
         return;
       }
+    } else {
+      sendResponse(exchange, 405, Map.of("status", "error", "message", "Method not allowed"));
     }
   }
 

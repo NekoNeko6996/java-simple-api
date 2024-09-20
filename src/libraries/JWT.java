@@ -59,7 +59,7 @@ public class JWT {
         long exp = Long.parseLong(payload.get("exp"));
 
         if (exp < currentTimeInSeconds) {
-            System.out.println("Token đã hết hạn.");
+            System.out.println("[JWT][verifyToken] Token expired");
             return false; // Token đã hết hạn
         }
 

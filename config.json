@@ -1,7 +1,7 @@
 {
   "server_host": "192.168.1.207",
   "server_port": 8090,
-  "server_max_threads": 10,
+  "server_max_threads": 30,
   "sql_host": "localhost",
   "sql_port": 3306,
   "sql_user": "root",

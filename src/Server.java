@@ -10,17 +10,7 @@ import src.config.ConfigLoader;
 import src.models.Config;
 import src.handlers.*;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-
 public class Server {
-    public static String generateSalt() {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
-    }
-
     public static void main(String[] args) throws IOException {
         Config config = ConfigLoader.getConfig();
 
@@ -35,12 +25,10 @@ public class Server {
         server.createContext("/checktoken", new CheckTokenHandler());
         server.createContext("/signup", new SignUpHandler());
         server.createContext("/login", new LoginHandler());
-        server.createContext("/gethash", new GenerateHashStringHandler());
-        server.createContext("/createtrip", new CreateATripHandler());
         server.createContext("/addtrip", new AddTripHandler());
-        server.createContext("/get", new getHandler());
         server.createContext("/addcategory", new AddCategoryHandler());
         server.createContext("/addexpense", new AddExpenseHandler());
+        server.createContext("/addfeedback", new AddFeedbackHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());
@@ -49,7 +37,6 @@ public class Server {
         // run server
         server.start();
 
-        System.out.println(
-                "Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
+        System.out.println("Server is listening in http://" + config.getServer_host() + ":" + server.getAddress().getPort());
     }
 }

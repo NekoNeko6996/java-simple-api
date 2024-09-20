@@ -5,10 +5,13 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import src.auth.Auth;
 import src.cors.Cors;
 import src.database.DataBase;
-import src.libraries.JWT;
 import src.libraries.JsonParser;
+import src.models.AuthResult;
+
 import java.sql.PreparedStatement;
 
 public class AddExpenseHandler implements HttpHandler {
@@ -30,13 +33,21 @@ public class AddExpenseHandler implements HttpHandler {
           return;
         }
 
-        // Verify JWT token
-        if (!JWT.verifyToken(data.get("token"))) {
-          sendResponse(exchange, 403, Map.of("status", "error", "message", "Invalid token"));
+        // Validate input data
+        if (data.get("trip_id") == null || data.get("expense_title") == null || data.get("amount") == null
+            || data.get("category") == null || data.get("expense_date") == null) {
+          sendResponse(exchange, 400, Map.of("status", "error", "message", "Missing required fields"));
           return;
         }
 
-        // Decode payload from token
+        // auth
+        AuthResult result = Auth.check(data.get("token"));
+        if (result.isSuccess() == false) {
+          sendResponse(exchange, 403, Map.of("status", "error", "message", result.getMessage()));
+          return;
+        }
+
+        // Save expense
         boolean status = saveExpense(
             8,
             "title",
@@ -48,13 +59,16 @@ public class AddExpenseHandler implements HttpHandler {
           sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save expense"));
           return;
         }
+
         sendResponse(exchange, 200, Map.of("status", "success", "message", "Expense added successfully"));
       } catch (Exception e) {
         System.out.println("[AddExpenseHandler][handle] " + e.getMessage());
         sendResponse(exchange, 500, Map.of("status", "error", "message", "Internal server error"));
       }
     }
-
+    else {
+      sendResponse(exchange, 405, Map.of("status", "error", "message", "Method not allowed"));
+    }
   }
 
   private boolean saveExpense(int trip_id, String expense_title, double amount, String category,

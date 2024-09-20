@@ -15,8 +15,6 @@ import com.sun.net.httpserver.HttpHandler;
 import src.libraries.*;
 import src.cors.Cors;
 import src.database.DataBase;
-import src.libraries.JsonParser;
-
 
 public class LoginHandler implements HttpHandler {
 
@@ -26,7 +24,7 @@ public class LoginHandler implements HttpHandler {
     try (PreparedStatement statement = DataBase.getConnect().prepareStatement(query)) {
       statement.setString(1, email);
 
-      // hash password  
+      // hash password
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
         if (PasswordHash.verifyPassword(password, resultSet.getString("password_hash"))) {
@@ -37,7 +35,7 @@ public class LoginHandler implements HttpHandler {
           data.put("last_name", resultSet.getString("last_name"));
           data.put("phone_number", resultSet.getString("phone_number"));
           data.put("role_id", resultSet.getString("role_id"));
-          
+
           return data;
         }
       }
@@ -49,7 +47,7 @@ public class LoginHandler implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    
+
     // CORS
     Cors.setHeaderCORS(exchange, "application/json");
 
@@ -63,17 +61,9 @@ public class LoginHandler implements HttpHandler {
       // convert body to map
       Map<String, String> loginData = JsonParser.parseJsonToMap(requestBody);
 
-
-      //
-      OutputStream os = exchange.getResponseBody();
-
       // check if all fields are filled
       if (loginData.get("email") == null || loginData.get("password") == null) {
-        String response = JsonParser.mapToJsonString(Map.of("message", "All fields are required"));
-        exchange.sendResponseHeaders(400, response.length());
-        os.write(response.getBytes());
-        os.close();
-        exchange.close();
+        sendResponse(exchange, 400, Map.of("status", "error", "message", "All fields are required"));
         return;
       }
 
@@ -82,23 +72,25 @@ public class LoginHandler implements HttpHandler {
         Map<String, String> data = checkLogin(loginData.get("email"), loginData.get("password"));
         if (data != null) {
           data.put("token", JWT.createToken(data, 3600));
-          String response = JsonParser.mapToJsonString(data);
-          exchange.sendResponseHeaders(200, response.length());
-          os.write(response.getBytes());
+          sendResponse(exchange, 200, data);
         } else {
-          String response = JsonParser.mapToJsonString(Map.of("message", "Wrong email or password"));
-          exchange.sendResponseHeaders(400, response.length());
-          os.write(response.getBytes());
+          sendResponse(exchange, 401, Map.of("status", "error", "message", "Invalid email or password"));
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         System.out.println("[LoginHandler][handle] " + e.getMessage());
-        String response = JsonParser.mapToJsonString(Map.of("message", "Internal server error"));
-        exchange.sendResponseHeaders(500, response.length());
-        os.write(response.getBytes());
+        sendResponse(exchange, 500, Map.of("status", "error", "message", "Internal server error"));
       }
-      os.close();
+    } else {
+      sendResponse(exchange, 405, Map.of("status", "error", "message", "Method not allowed"));
     }
+  }
+
+  private void sendResponse(HttpExchange exchange, int code, Map<String, String> response) throws IOException {
+    String responseString = JsonParser.mapToJsonString(response);
+    exchange.sendResponseHeaders(code, responseString.length());
+    OutputStream os = exchange.getResponseBody();
+    os.write(responseString.getBytes());
+    os.close();
     exchange.close();
   }
 }

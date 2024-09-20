@@ -6,17 +6,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import src.auth.Auth;
 import src.cors.Cors;
 import src.database.DataBase;
-import src.libraries.JWT;
 import src.libraries.JsonParser;
+import src.models.AuthResult;
 
 import java.sql.PreparedStatement;
 
 public class AddTripHandler implements HttpHandler {
 
   private static boolean saveNewTrip(int user_id, String trip_name, String start_date, String end_date,
-      String destination, double budget) throws Exception {
+      String destination, double budget) {
     String query = "INSERT INTO trips (user_id, trip_name, start_date, end_date, destination, budget) VALUES (?, ?, ?, ?, ?, ?)";
     try (PreparedStatement statement = DataBase.getConnect().prepareStatement(query)) {
       statement.setInt(1, user_id);
@@ -27,6 +28,9 @@ public class AddTripHandler implements HttpHandler {
       statement.setDouble(6, budget);
       statement.executeUpdate();
       return true;
+    } catch (Exception e) {
+      System.out.println("[AddTripHandler][saveNewTrip] " + e.getMessage());
+      return false;
     }
   }
 
@@ -47,14 +51,15 @@ public class AddTripHandler implements HttpHandler {
           return;
         }
 
-        // Verify JWT token
-        if (!JWT.verifyToken(data.get("token"))) {
-          sendResponse(exchange, 403, Map.of("status", "error", "message", "Invalid token"));
+        // Validate token
+        AuthResult result = Auth.check(data.get("token"));
+        if (result.isSuccess() == false) {
+          sendResponse(exchange, 403, Map.of("status", "error", "message", result.getMessage()));
           return;
         }
 
         // Decode payload from token
-        Map<String, String> payload = JWT.decodePayload(data.get("token"));
+        Map<String, String> payload = result.getPayload();
 
         // Validate input data
         if (data.get("title") == null || data.get("start_date") == null || data.get("end_date") == null
@@ -64,13 +69,18 @@ public class AddTripHandler implements HttpHandler {
         }
 
         // Save trip data
-        saveNewTrip(
+        boolean isSuccess = saveNewTrip(
             Integer.parseInt(payload.get("user_id")),
             data.get("title"),
             data.get("start_date"),
             data.get("end_date"),
             data.get("destination"),
             Double.parseDouble(data.get("budget")));
+
+        if (!isSuccess) {
+          sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save trip"));
+          return;
+        }
 
         // Send success response
         sendResponse(exchange, 200, Map.of("status", "success", "message", "Trip added successfully"));

@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.io.InputStream;
 import src.cors.Cors;
 import src.database.DataBase;
-import src.libraries.JsonParser;
+
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -63,24 +63,19 @@ public class SignUpHandler implements HttpHandler {
       InputStream inputStream = exchange.getRequestBody();
       String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-      OutputStream os = exchange.getResponseBody();
-
       // get sign up data
       Map<String, String> signUpData = JsonParser.parseJsonToMap(requestBody);
 
       // check if all fields are filled
       if (signUpData.get("email") == null || signUpData.get("password") == null || signUpData.get("first_name") == null
           || signUpData.get("last_name") == null || signUpData.get("phone_number") == null) {
-        exchange.sendResponseHeaders(400, 0);
+        sendResponse(exchange, 400, Map.of("status", "error", "message", "All fields are required"));
         return;
       }
 
       // check if email already exists
       if (checkEmailExists(signUpData.get("email"))) {
-        String response = JsonParser.mapToJsonString(Map.of("message", "Email already exists"));
-        exchange.sendResponseHeaders(409, response.length());
-        os.write(response.getBytes());
-        os.close();
+        sendResponse(exchange, 400, Map.of("status", "error", "message", "Email already exists"));
         return;
       }
 
@@ -108,27 +103,25 @@ public class SignUpHandler implements HttpHandler {
               "role_id", String.valueOf(DEFAULT_ROLE));
 
           // send response
-          String response = JsonParser.mapToJsonString(responseMap);
-          exchange.sendResponseHeaders(201, response.length());
-          os.write(response.getBytes());
+          sendResponse(exchange, 200, responseMap);
         } catch (Exception e) {
           e.printStackTrace();
-          String response = JsonParser.mapToJsonString(Map.of("message", "Failed to create user"));
-          exchange.sendResponseHeaders(500, response.length());
-          os.write(response.getBytes());
-          return;
+          sendResponse(exchange, 500, Map.of("message", "Failed to create user"));
         }
       } else {
-        String response = JsonParser.mapToJsonString(Map.of("message", "Failed to create user"));
-        exchange.sendResponseHeaders(500, response.length());
-        os.write(response.getBytes());
+        sendResponse(exchange, 500, Map.of("message", "Failed to create user"));
       }
-
-      os.close();
-      exchange.close();
     } else {
-      exchange.sendResponseHeaders(404, -1);
-      return;
+      sendResponse(exchange, 405, Map.of("message", "Method not allowed"));
     }
+  }
+
+  private void sendResponse(HttpExchange exchange, int code, Map<String, String> response) throws IOException {
+    String responseString = JsonParser.mapToJsonString(response);
+    exchange.sendResponseHeaders(code, responseString.length());
+    OutputStream os = exchange.getResponseBody();
+    os.write(responseString.getBytes());
+    os.close();
+    exchange.close();
   }
 }
