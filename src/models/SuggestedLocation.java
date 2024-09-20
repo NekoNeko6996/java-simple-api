@@ -58,7 +58,7 @@ public class SuggestedLocation {
         "\"expected_date\":" + expected_date + "," +
         "\"img_link\":\"" + img_link + "\"," +
         "\"description\":\"" + description + "\"," +
-        "\"create_at\":" + create_at +
+        "\"create_at\":\"" + create_at + "\"" +
         "}";
   }
 }

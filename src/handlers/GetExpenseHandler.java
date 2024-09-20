@@ -27,7 +27,7 @@ public class GetExpenseHandler implements HttpHandler {
     List<Expense> expenses = new ArrayList<>();
 
     try {
-      String sql = "SELECT * FROM expenses WHERE trip_id = ? ORDER BY expense_date ASC;";
+      String sql = "SELECT * FROM expenses WHERE trip_id = ? ORDER BY expense_date DESC;";
       PreparedStatement ps = DataBase.getConnect().prepareStatement(sql);
       ps.setInt(1, trip_id);
       ResultSet rs = ps.executeQuery();
@@ -106,8 +106,6 @@ public class GetExpenseHandler implements HttpHandler {
           sendResponse(exchange, 404, Map.of("status", "error", "message", "Expense not found"));
           return;
         }
-        System.out.println(expenses);
-
         String responseJSON = listToJson(expenses);
         exchange.sendResponseHeaders(200, responseJSON.length());
         OutputStream os = exchange.getResponseBody();

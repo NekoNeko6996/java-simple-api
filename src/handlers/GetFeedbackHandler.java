@@ -21,7 +21,7 @@ public class GetFeedbackHandler implements HttpHandler {
   private List<Feedback> getFeedback() throws Exception {
     List<Feedback> data = new ArrayList<>();
     try (Statement statement = DataBase.getConnect().createStatement()) {
-      String sql = "SELECT * FROM feedbacks";
+      String sql = "SELECT * FROM feedbacks ORDER BY create_at DESC";
       ResultSet rs = statement.executeQuery(sql);
       while (rs.next()) {
         String id = rs.getString("feedback_id");
@@ -65,7 +65,7 @@ public class GetFeedbackHandler implements HttpHandler {
 
         String responseJSON = listToJson(data);
 
-        exchange.sendResponseHeaders(200, responseJSON.length());
+        exchange.sendResponseHeaders(200, 0);
         OutputStream os = exchange.getResponseBody();
         os.write(responseJSON.getBytes());
         os.close();

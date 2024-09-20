@@ -30,7 +30,10 @@ public class Server {
         server.createContext("/addexpense", new AddExpenseHandler());
         server.createContext("/addfeedback", new AddFeedbackHandler());
         server.createContext("/addtimeline", new AddTimelineHandler());
-        
+        server.createContext("/addsuggestedlocation", new AddSuggestedLocationHandler());
+        // edit
+        server.createContext("/endtrip", new EndTripHandler());
+
         // get route
         server.createContext("/getfeedback", new GetFeedbackHandler());
         server.createContext("/getsuggestedlocation", new GetSuggestedLocationHandler());
@@ -38,6 +41,10 @@ public class Server {
         server.createContext("/getontrip", new GetOnTripHandler());
         server.createContext("/getexpense", new GetExpenseHandler());
         server.createContext("/gettimeline", new GetTimelineHandler());
+        server.createContext("/gettriphistory", new GetTripHistoryHandler());
+
+        //
+        server.createContext("/test", new TestHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());

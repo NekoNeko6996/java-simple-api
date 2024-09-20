@@ -49,12 +49,13 @@ public class AddExpenseHandler implements HttpHandler {
 
         // Save expense
         boolean status = saveExpense(
-            8,
-            "title",
-            82,
-            "category",
-            "2022-01-01",
-            "notes");
+            Integer.parseInt(data.get("trip_id")),
+            data.get("expense_title"),
+            Double.parseDouble(data.get("amount")),
+            data.get("category"),
+            data.get("expense_date"),
+            data.get("notes"));
+
         if (!status) {
           sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save expense"));
           return;
@@ -65,8 +66,7 @@ public class AddExpenseHandler implements HttpHandler {
         System.out.println("[AddExpenseHandler][handle] " + e.getMessage());
         sendResponse(exchange, 500, Map.of("status", "error", "message", "Internal server error"));
       }
-    }
-    else {
+    } else {
       sendResponse(exchange, 405, Map.of("status", "error", "message", "Method not allowed"));
     }
   }
