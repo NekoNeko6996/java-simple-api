@@ -91,7 +91,7 @@ public class SignUpHandler implements HttpHandler {
           payload.put("phone_number", signUpData.get("phone_number"));
           payload.put("role_id", String.valueOf(DEFAULT_ROLE));
 
-          String token = JWT.createToken(payload, 3600 * 24 * 7);
+          String token = JWT.createToken(payload, 3600 * 24 * 30);
 
           Map<String, String> responseMap = Map.of(
               "message", "User created successfully",

@@ -19,16 +19,14 @@ import java.util.Map;
 
 public class AddSuggestedLocationHandler implements HttpHandler {
 
-  private boolean addSuggestedLocation(String location_name, double price, String expected_date,
-      String img_link, String description) {
+  private boolean addSuggestedLocation(String location_name, double price, String expected_date, String description) {
 
-    String query = "INSERT INTO suggested_locations (location_name, price, expected_date, img_link, description) VALUES (?, ?, ?, ?, ?)";
+    String query = "INSERT INTO suggested_locations (location_name, price, expected_date, description) VALUES (?, ?, ?, ?)";
     try (PreparedStatement statement = DataBase.getConnect().prepareStatement(query)) {
       statement.setString(1, location_name);
       statement.setDouble(2, price);
       statement.setString(3, expected_date);
-      statement.setString(4, img_link);
-      statement.setString(5, description);
+      statement.setString(4, description);
       statement.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
@@ -62,9 +60,8 @@ public class AddSuggestedLocationHandler implements HttpHandler {
         String location_name = reqBodyMap.get("location_name");
         double price = Double.parseDouble(reqBodyMap.get("price"));
         String expected_date = reqBodyMap.get("expected_date");
-        String img_link = reqBodyMap.get("img_link");
         String description = reqBodyMap.get("description");
-        addSuggestedLocation(location_name, price, expected_date, img_link, description);
+        addSuggestedLocation(location_name, price, expected_date, description);
 
         sendResponse(exchange, 200, Map.of("status", "success", "message", "Suggested location added successfully"));
       } catch (Exception e) {

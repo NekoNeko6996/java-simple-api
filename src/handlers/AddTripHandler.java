@@ -17,8 +17,8 @@ import java.sql.PreparedStatement;
 public class AddTripHandler implements HttpHandler {
 
   private static boolean saveNewTrip(int user_id, String trip_name, String start_date, String end_date,
-      String destination, double budget) {
-    String query = "INSERT INTO trips (user_id, trip_name, start_date, end_date, destination, budget) VALUES (?, ?, ?, ?, ?, ?)";
+      String destination, double budget, String currency) {
+    String query = "INSERT INTO trips (user_id, trip_name, start_date, end_date, destination, budget, currency) VALUES (?, ?, ?, ?, ?, ?, ?)";
     try (PreparedStatement statement = DataBase.getConnect().prepareStatement(query)) {
       statement.setInt(1, user_id);
       statement.setString(2, trip_name);
@@ -26,6 +26,7 @@ public class AddTripHandler implements HttpHandler {
       statement.setString(4, end_date);
       statement.setString(5, destination);
       statement.setDouble(6, budget);
+      statement.setString(7, currency);
       statement.executeUpdate();
       return true;
     } catch (Exception e) {
@@ -75,7 +76,8 @@ public class AddTripHandler implements HttpHandler {
             data.get("start_date"),
             data.get("end_date"),
             data.get("destination"),
-            Double.parseDouble(data.get("budget")));
+            Double.parseDouble(data.get("budget")),
+            data.get("currency"));
 
         if (!isSuccess) {
           sendResponse(exchange, 500, Map.of("status", "error", "message", "Failed to save trip"));

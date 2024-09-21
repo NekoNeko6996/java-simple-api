@@ -12,22 +12,22 @@ import src.cors.Cors;
 import java.nio.charset.StandardCharsets;
 import src.database.DataBase;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import src.libraries.JsonParser;
 import src.models.AuthResult;
 import src.models.TripTable;
+import java.sql.Statement;
 
 public class GetOnTripHandler implements HttpHandler {
 
   private TripTable getTrip(int user_id) throws Exception {
-    String query = "SELECT * FROM trips WHERE user_id = ? AND status = 'on trip';";
+    String query = "SELECT * FROM trips WHERE status = 'on trip';";
 
-    try (PreparedStatement stmt = DataBase.getConnect().prepareStatement(query)) {
-      stmt.setInt(1, user_id);
-      ResultSet rs = stmt.executeQuery();
+    try (Statement stmt = DataBase.getConnect().createStatement()) {
+      // stmt.setInt(1, user_id);
+      ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
         TripTable trip = new TripTable(
             rs.getInt("trip_id"),

@@ -31,6 +31,7 @@ public class Server {
         server.createContext("/addfeedback", new AddFeedbackHandler());
         server.createContext("/addtimeline", new AddTimelineHandler());
         server.createContext("/addsuggestedlocation", new AddSuggestedLocationHandler());
+
         // edit
         server.createContext("/endtrip", new EndTripHandler());
 
@@ -42,9 +43,24 @@ public class Server {
         server.createContext("/getexpense", new GetExpenseHandler());
         server.createContext("/gettimeline", new GetTimelineHandler());
         server.createContext("/gettriphistory", new GetTripHistoryHandler());
+        server.createContext("/getuserinfo", new CheckTokenHandler());
+        server.createContext("/getimage", new GetImageHandler());
+
+        // update route
+        server.createContext("/updateuserinfo", new UpdateUserInfoHandler());
+        server.createContext("/updateexpense", new UpdateExpenseHandler());
+        server.createContext("/changepassword", new ChangePasswordHandler());
+
+        // delete route
+        server.createContext("/deleteexpense", new DeleteExpenseHandler());
+        server.createContext("/deletetimeline", new DeleteTimeLineHandler());
 
         //
         server.createContext("/test", new TestHandler());
+
+        // upload resources
+        server.createContext("/uploadimg", new ImageUploadHandler());
+        server.createContext("/uploadavatar", new AvatarUploadHandler());
 
         // thread pool
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(config.getServer_max_threads());
